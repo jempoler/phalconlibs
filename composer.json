@@ -1,0 +1,15 @@
+{
+    "name": "jempoler/phalconlibs",
+    "type": "library",
+    "description": "Adapters, prototypes or functionality that can be potentially incorporated to the C-framework.",
+    "keywords": ["framework", "phalcon", "php"],
+    "homepage": "https://github.com/jempoler/phalconlibs",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Leonardus Agung",
+            "email": "jempoler.com@gmail.com"
+        }
+    ],
+    "require": {},
+}
