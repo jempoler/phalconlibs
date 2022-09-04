@@ -14,4 +14,16 @@
     "require": {
     	"php": ">=7.4"
    	}
+    "require-dev": {
+        "phpunit/phpunit": "4.*"
+    },
+    "suggest": {
+        "jempoler/emprit": "Emprit Application Framework"
+    },
+    "autoload": {
+        "psr-4": { "Jempoler\\Phalcon\\": "" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Jempoler\\Phalcon\\Test\\": "tests/unit/" }
+    }
 }
