@@ -9,7 +9,7 @@
   | with this package in the file LICENSE.                                 |
   |                                                                        |
   +------------------------------------------------------------------------+
-  | Authors: Leonardus Agung <jempoler.com@gmail.com>                         |
+  | Authors: Jempoler <jempoler.com@gmail.com>                         |
   |                                                                        |
   +------------------------------------------------------------------------+
 */
@@ -39,8 +39,10 @@ class NativeArray extends \Phalcon\Di\Injectable
 		} else {
 			if (method_exists($this, 'addTranslateKey')) {
 				// call_user_func_array([$this, 'addTranslateKey'], [$translateKey, $defaultTranslation]);
-				$translation = call_user_func([$this, 'addTranslateKey'], $translateKey, $defaultTranslation, $languageModule, $controllerName);
+				// $translation = call_user_func([$this, 'addTranslateKey'], $translateKey, $defaultTranslation, $languageModule, $controllerName);
+				$translation = $this->addTranslateKey($translateKey, $defaultTranslation, $languageModule, $controllerName);
 			}
+			$this->_translate[$translateKey] = $translation;
 		}
 		return $this->replacePlaceholders($translation, $placeholders);
 	}
@@ -48,18 +50,20 @@ class NativeArray extends \Phalcon\Di\Injectable
 	/**
 	 * Returns translations related to the given keys
 	 */
-	public function __($translateKeys = array(), $languageModule = null, $controllerName = '')
+	public function __($translations = array(), $languageModule = null, $controllerName = '')
 	{
 		$ret = array();
-		foreach ($translateKeys as $key) {
-			$translation = $key[0];
+		$newTrans = array();
+		foreach ($translations as $index => $trans) {
+			$translateKey = $trans[0];
+			$translation = $translateKey;
 			$defaultTranslation = "";
-			if (isset($key[1])) {
-				$defaultTranslation = $key[1];
+			if (isset($trans[1])) {
+				$defaultTranslation = $trans[1];
 			}
 			$placeholders = null;
-			if (isset($key[2])) {
-				$placeholders = $key[2];
+			if (isset($trans[2])) {
+				$placeholders = $trans[2];
 			}
 			if (is_array($defaultTranslation) && $placeholders === null) {
 				$placeholders = $defaultTranslation;
@@ -68,15 +72,18 @@ class NativeArray extends \Phalcon\Di\Injectable
 					$translation = $defaultTranslation;
 				}
 			}
-			if ($this->exists($key[0])) {
-				$translation = $this->_translate[$key[0]];
-			} else {				
-				if (method_exists($this, 'addTranslateKey')) {
-					// call_user_func_array([$this, 'addTranslateKey'], [$key, $defaultTranslation]);
-					$translation = call_user_func([$this, 'addTranslateKey'], $key[0], $defaultTranslation, $languageModule, $controllerName);
-				}
+			if ($this->exists($translateKey)) {
+				$translation = $this->_translate[$translateKey];
+			} else {
+				$newTrans[$translateKey] = $translation;
+				$this->_translate[$translateKey] = $translation;
 			}
-			$ret[$key[0]] = $this->replacePlaceholders($translation, $placeholders);
+			$ret[$translateKey] = $this->replacePlaceholders($translation, $placeholders);
+		}
+		if (!empty($newTrans)) {
+			if (method_exists($this, 'addTranslateKeys')) {
+				$this->addTranslateKeys($newTrans, $languageModule, $controllerName);
+			}
 		}
 		return $ret;
 	}
